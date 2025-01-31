@@ -6,7 +6,7 @@ from langchain_core.output_parsers import StrOutputParser
 
 retriever = vectorstore.as_retriever(search_kwargs={"k":1})
 
-docks = retriever.get_relevant_documents("what is patient current problem")
+# docks = retriever.get_relevant_documents("what is patient current problem")
 # len(docks)
 
 
