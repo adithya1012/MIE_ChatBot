@@ -12,6 +12,7 @@ pip install langsmith
 pip install scikit-learn
 pip install Flask==2.0.1
 pip install requests==2.26.0
+pip install Werkzeug==2.2.2
 
 # Verify installation
 pip show langchain-google-vertexai

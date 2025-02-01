@@ -1,29 +1,19 @@
-from Indexing import retrieved_docs
 from Indexing import vectorstore, llm
 from langchain import hub
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 
-retriever = vectorstore.as_retriever(search_kwargs={"k":1})
+# Initialize the retriever properly
+retriever = vectorstore.as_retriever(search_kwargs={"k": 1})
 
-# docks = retriever.get_relevant_documents("what is patient current problem")
-# len(docks)
-
-
-
-# Prompt
+# Pull the RAG prompt template
 prompt = hub.pull("rlm/rag-prompt")
-# print(prompt)
-# LLM
-# llm = ChatVertexAI(
-#     model="gemini-1.5-flash-001"
-# )
 
-# Post-processing
+# Function to format retrieved documents
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
-# Chain
+# Ensure retriever is a valid runnable before using the `|` operator
 rag_chain = (
     {"context": retriever | format_docs, "question": RunnablePassthrough()}
     | prompt
@@ -31,7 +21,9 @@ rag_chain = (
     | StrOutputParser()
 )
 
-# Question
-print("********************************")
-print(rag_chain.invoke("what is patient current problem"))
-print("********************************")
+def ask_llm(question):
+    if question:
+        answer = rag_chain.invoke(question)
+    else:
+        answer = "No question provided"
+    return answer

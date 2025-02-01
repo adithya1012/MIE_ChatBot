@@ -10,23 +10,17 @@ RUN apt-get update && \
     apt-get install -y poppler-utils tesseract-ocr libtesseract-dev libgl1 && \
     apt-get clean
 
-# Create a virtual environment
-RUN python3 -m venv /app/venv
-
-# Copy the requirements.sh script into the container
-COPY requirements.sh /app/requirements.sh
-
-# Give execute permission to the requirements.sh file
-RUN chmod +x /app/requirements.sh
-
-# Run the requirements.sh script using Bash and activate the virtual environment
-RUN /bin/bash -c "source /app/venv/bin/activate && /app/requirements.sh"
-
-# Copy the rest of the application code
+# Copy the rest of the application code first
 COPY . .
 
-# Environment variable for Google credentials (adjust the path as needed)
+# Create a virtual environment (after copying files)
+RUN python3 -m venv /app/venv
+
+# Install dependencies using the virtual environment
+RUN /bin/bash -c "source /app/venv/bin/activate && /app/requirements.sh"
+
+# Environment variable for Google credentials
 ENV GOOGLE_APPLICATION_CREDENTIALS=/app/Google-service-account-credential.json
 
 # Run the script using the virtual environment's Python interpreter
-CMD ["/app/venv/bin/python3", "Retrive.py"]
+CMD ["/app/venv/bin/python3", "app.py"]
