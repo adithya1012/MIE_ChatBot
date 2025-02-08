@@ -17,7 +17,7 @@ from langchain_core.output_parsers import StrOutputParser
 # from langchain_core.runnables import RunnablePassthrough
 from langchain.schema import Document
 
-# chunks = chunks[:2]
+chunks = chunks[:2]
 # chunks[0] = "Patient is having high fever"
 # chunks[1] = "Patient is having vomiting"
 # print("###################")
