@@ -1,0 +1,11 @@
+name: test
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: This is a test step
+        run: echo "Hello, World!"
+      - name: This is listig all files in CWD
+        run: ls -a
