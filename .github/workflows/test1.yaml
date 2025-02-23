@@ -31,5 +31,3 @@ jobs:
           pwd
       - name: test2 step4
         run: echo ${{ github.ref }}
-      - name: test2 step5
-        run: echo ${{ github.sha }}
