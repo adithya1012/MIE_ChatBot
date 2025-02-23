@@ -1,0 +1,33 @@
+name: Test2
+on:
+  push:
+    branches:
+      - main
+env:
+  ENV_TEST: dummy value
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Step1 $ENV_TEST
+        id: step1
+        run: echo $ENV_TEST
+      - name: step2 ${{ env.ENV_TEST }}
+        run: echo ${{ env.ENV_TEST }}
+      - name: step3 IF condition
+        if: ${{ github.event_name }} == push
+        run: echo "This is a push event"
+  test2_dependent:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: test2 step1
+        run: echo ${{ steps.step1.outputs }}
+      - name: test2 step2
+        uses: actions/checkout@v2
+      - name: test2 step3
+        run: |
+          ls -a
+          pwd
+      - name: test2 step4
+        run: echo ${{ github.ref }}
