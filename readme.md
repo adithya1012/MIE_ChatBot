@@ -1,46 +1,137 @@
-# Medical Chatbot for Doctors - RAG
+# react-beautiful-chat
 
-This is a prototype for a Medical Assistant chatbot, **DoctBot**, built using the **Retrieval-Augmented Generation (RAG) architecture**. This chatbot will have all the relevant information about the patient a doctor is consulting and will answer patient-related questions. Doctors can ask **general** questions, such as a patient summary, or **specific** queries, like a patient's allergies. The chatbot will generate responses based on the patient's medical history.
+`react-beautiful-chat` provides an intercom-like chat window that can be included easily in any project for free. It provides no messaging facilities, only the view component.
 
-## Architecture
+`react-beautiful-chat` is an improved version of `react-chat-window` (which you can find [here](https://github.com/kingofthestack/react-live-chat))
 
-In this prototype, I have created **two containers**: **frontend** and **backend**, connected via a network. The entire setup is managed using **Docker Compose**.
+<a href="https://www.npmjs.com/package/react-beautiful-chat" target="\_parent">
+  <img alt="" src="https://img.shields.io/npm/dm/react-beautiful-chat.svg" />
+</a>
+<a href="https://github.com/mattmezza/react-beautiful-chat" target="\_parent">
+  <img alt="" src="https://img.shields.io/github/stars/mattmezza/react-beautiful-chat.svg?style=social&label=Star" />
+</a>
 
-### **Backend:**
+![gif](https://media.giphy.com/media/3ohs4wE4DqXw84xAMo/giphy.gif)
 
-- A **Python Flask application** that listens for requests from the frontend container.
-- The backend receives a question from the frontend as a string.
-- The question is passed to a **retriever** to fetch relevant documents.
-- The retrieved document and the question are sent to the **LLM** (Large Language Model).
-- The LLM generates a response, which is then sent back to the frontend.
+## Features
 
-### **Frontend:**
+- Customizeable
+- Backend agnostic
+- Free
 
-- A **simple Python script** that communicates with the backend container via the command prompt.
+## [Demo](https://mattmezza.github.io/react-beautiful-chat/)
 
-## **Requirements**
+## Table of Contents
+- [Installation](#installation)
+- [Example](#example)
+- [Components](#api)
 
-- Docker
-- Git
+## Installation
 
-## **Steps to Run**
-
-```sh
-git clone https://github.com/adithya1012/RAG_Medical_ChatBot
-cd RAG_Medical_ChatBot
-docker-compose build --no-cache
-docker-compose up
+```
+$ npm install react-beautiful-chat
 ```
 
-At this point, both containers will be running, but we **cannot** directly provide input through the command prompt, as Flask occupies the terminal. To interact with the chatbot, we need to **enter the frontend container** and run the program. Open a **new terminal** and execute the following commands:
+## Example
 
-```sh
-docker exec -it frontend bash
-source venv/bin/activate
-python3 main.py
+``` javascript
+import React, {Component} from 'react'
+import {render} from 'react-dom'
+import {Launcher} from '../../src'
+
+class Demo extends Component {
+
+  constructor() {
+    super();
+    this.state = {
+      messageList: messageHistory
+    };
+  }
+
+  _onMessageWasSent(message) {
+    this.setState({
+      messageList: [...this.state.messageList, message]
+    })
+  }
+
+  _sendMessage(text) {
+    if (text.length > 0) {
+      this.setState({
+        messageList: [...this.state.messageList, {
+          author: 'them',
+          type: 'text',
+          data: { text }
+        }]
+      })
+    }
+  }
+
+  render() {
+    return (<div>
+      <Launcher
+        agentProfile={{
+          teamName: 'react-beautiful-chat',
+          imageUrl: 'https://a.slack-edge.com/66f9/img/avatars-teams/ava_0001-34.png'
+        }}
+        onMessageWasSent={this._onMessageWasSent.bind(this)}
+        messageList={this.state.messageList}
+        showEmoji
+      />
+    </div>)
+  }
+}
 ```
 
-## **Future Work**
+For more detailed examples see the demo folder.
 
-- Currently, patient data is **read from PDFs**. This will be replaced with **company-specific databases** for real-time access to patient records.
-- No **validation** mechanisms are in place at the moment. In the future, **RAG-based guardrails (RAGGas)** will be added to detect **hallucinations** in LLM-generated responses.
+## Components
+
+# Launcher
+
+`Launcher` is the only component needed to use react-beautiful-chat. It will react dynamically to changes in messages. All new messages must be added via a change in props as shown in the example.
+
+Launcher props:
+
+|prop | type   | description |
+|-----|--------|---------------|
+| *agentProfile | object | Represents your product or service's customer service agent. Fields: teamName, imageUrl|
+| onMessageWasSent | function(message) | Called when a message a message is sent with a message object as an argument. |
+| messageList | [message] | An array of message objects to be rendered as a conversation. |
+| showEmoji | bool | A bool indicating whether or not to show the emoji button
+| showFile | bool | A bool indicating whether or not to show the file chooser button
+| onKeyPress | func | A function `(userInput) => console.log(userInput)` used to do something with the user input. The function is invoked debounced at 300ms
+| onDelete | func | A function `(msg) => console.log(msg)` used to delete a sent message. If this props is set, a delete button will be shown in the top right corner of each message sent by the user to a partner. You can set any property on the message object (an `id` property for instance) and then use this property to call some backend api to delete the message.
+
+
+### Message Objects
+
+Message objects are rendered differently depending on their type. Currently, only text and emoji types are supported. Each message object has an `author` field which can have the value 'me' or 'them'.
+
+``` javascript
+{
+  author: 'them',
+  type: 'text',
+  data: {
+    text: 'some text'
+  }
+}
+
+{
+  author: 'me',
+  type: 'emoji',
+  data: {
+    code: 'someCode'
+  }
+}
+
+{
+  author: 'me',
+  type: 'file',
+  data: {
+    name: 'file.mp3',
+    url: 'https:123.rf/file.mp3'
+  }
+}
+
+```
+
