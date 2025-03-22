@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const system_1 = require("../prompts/system");
 function llm_response(input_test) {
     return __awaiter(this, void 0, void 0, function* () {
         // Talk to Ollama and respond back.
@@ -21,6 +22,7 @@ function llm_response(input_test) {
                 body: JSON.stringify({
                     model: "deepseek-r1:1.5b",
                     prompt: input_test,
+                    system: system_1.SYSTEM_PROMPT,
                     stream: false,
                 }),
             });

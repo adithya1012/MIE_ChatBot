@@ -1,5 +1,6 @@
 import { WebSocketServer, WebSocket } from "ws";
 import llm_response from "./core/index";
+import gemini_response from "./core/gemini";
 
 const port: number = 8090;
 const wss = new WebSocketServer({ port }, () => {
@@ -17,7 +18,8 @@ wss.on("connection", (ws: any) => {
   ws.on("message", async (data: Buffer) => {
     const message = data.toString();
     console.log(`Received message: ${message}`);
-    const respose = await llm_response(message);
+    // const respose = await llm_response(message);
+    const respose = await gemini_response(message);
     console.log(respose);
     // Send a response message
     // ws.send(`Response: ${message}`);

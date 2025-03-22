@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const ws_1 = require("ws");
-const index_1 = require("./core/index");
+const gemini_1 = require("./core/gemini");
 const port = 8090;
 const wss = new ws_1.WebSocketServer({ port }, () => {
     console.log(`WebSocket server is listening on ws://localhost:${port}`);
@@ -24,7 +24,8 @@ wss.on("connection", (ws) => {
     ws.on("message", (data) => __awaiter(void 0, void 0, void 0, function* () {
         const message = data.toString();
         console.log(`Received message: ${message}`);
-        const respose = yield (0, index_1.default)(message);
+        // const respose = await llm_response(message);
+        const respose = yield (0, gemini_1.default)(message);
         console.log(respose);
         // Send a response message
         // ws.send(`Response: ${message}`);
