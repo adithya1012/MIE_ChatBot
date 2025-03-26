@@ -24,12 +24,12 @@ wss.on("connection", (ws) => {
     // Listen for incoming messages from the client
     ws.on("message", (data) => __awaiter(void 0, void 0, void 0, function* () {
         const message = data.toString();
-        console.log(`Received message: ${message}`);
+        // console.log(`Received message: ${message}`);
         // const respose = await llm_response(message);
         const respose = yield (0, gemini_1.default)(message);
         // console.log(respose);
         (0, parseAssistantMessage_1.parseAssistanceMessage)(respose);
-        console.log("THIS S A TEST MESSAGE");
+        // console.log("THIS S A TEST MESSAGE");
         // Send a response message
         // ws.send(`Response: ${message}`);
         ws.send(respose);
