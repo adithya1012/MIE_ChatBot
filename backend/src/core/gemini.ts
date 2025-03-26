@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { SYSTEM_PROMPT } from "../prompts/system";
 
 async function gemini_response(prompt: string): Promise<string> {
-  const genAI = new GoogleGenerativeAI("XXXXXXXXXX");
+  const genAI = new GoogleGenerativeAI("");
   const model = genAI.getGenerativeModel({
     model: "gemini-2.0-flash",
     systemInstruction: SYSTEM_PROMPT,

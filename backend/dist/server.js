@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const ws_1 = require("ws");
 const gemini_1 = require("./core/gemini");
+const parseAssistantMessage_1 = require("./parser/parseAssistantMessage");
 const port = 8090;
 const wss = new ws_1.WebSocketServer({ port }, () => {
     console.log(`WebSocket server is listening on ws://localhost:${port}`);
@@ -26,7 +27,9 @@ wss.on("connection", (ws) => {
         console.log(`Received message: ${message}`);
         // const respose = await llm_response(message);
         const respose = yield (0, gemini_1.default)(message);
-        console.log(respose);
+        // console.log(respose);
+        (0, parseAssistantMessage_1.parseAssistanceMessage)(respose);
+        console.log("THIS S A TEST MESSAGE");
         // Send a response message
         // ws.send(`Response: ${message}`);
         ws.send(respose);
