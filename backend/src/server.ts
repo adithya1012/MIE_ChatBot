@@ -1,7 +1,6 @@
 import { WebSocketServer, WebSocket } from "ws";
-import llm_response from "./core/index";
-import gemini_response from "./core/gemini";
-import { parseAssistanceMessage } from "./parser/parseAssistantMessage";
+import llm_response from "./llm_api/local";
+import { TaskHandler } from "./init";
 
 const port: number = 8090;
 const wss = new WebSocketServer({ port }, () => {
@@ -20,13 +19,15 @@ wss.on("connection", (ws: any) => {
     const message = data.toString();
     // console.log(`Received message: ${message}`);
     // const respose = await llm_response(message);
-    const respose = await gemini_response(message);
+
     // console.log(respose);
-    parseAssistanceMessage(respose);
+    TaskHandler(message, (response) => {
+      ws.send(response);
+    });
     // console.log("THIS S A TEST MESSAGE");
     // Send a response message
     // ws.send(`Response: ${message}`);
-    ws.send(respose);
+    // ws.send(respose);
 
     // Optionally, signal end of the message stream:
     // ws.send("[END]");

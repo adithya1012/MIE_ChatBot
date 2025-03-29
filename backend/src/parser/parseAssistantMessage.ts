@@ -6,7 +6,7 @@ import {
   ToolParamName,
 } from "./index";
 
-export function parseAssistanceMessage(assistantMessage: string): string {
+export function parseAssistanceMessage(assistantMessage: string): any[] {
   let didStartToolUse = false;
   let accumulator = "";
   let currentTooluse: ToolUse | undefined = undefined;
@@ -72,5 +72,5 @@ export function parseAssistanceMessage(assistantMessage: string): string {
     }
   }
   console.log(contentBlocks);
-  return "";
+  return contentBlocks;
 }
