@@ -1,5 +1,6 @@
 import gemini_response from "./llm_api/gemini";
 import { parseAssistanceMessage } from "./parser/parseAssistantMessage";
+import { mars_api } from "./tool_api/marsRoverImgAPI";
 
 export class MIEChat {
   message: any[] = [];
@@ -39,8 +40,21 @@ export class MIEChat {
       console.log(userContent.text);
       const respose = await gemini_response(userContent[0].text);
       this.assistantMessageContent = parseAssistanceMessage(respose);
-      if (this.responseCallback) {
-        this.responseCallback(JSON.stringify(this.assistantMessageContent));
+      for (let i = 0; i < this.assistantMessageContent.length; i++) {
+        const block = this.assistantMessageContent[i];
+        if (block["name"] == "general_qeury") {
+          if (this.responseCallback) {
+            this.responseCallback(JSON.stringify(block["params"]["response"]));
+          }
+          // TODO: Need to handle the recursive call of the function
+        } else if (block["name"] == "mars_rover_image") {
+          // Hit Mars Rover API to get the images.
+          const response = await mars_api(block["params"]);
+
+          if (this.responseCallback) {
+            this.responseCallback(JSON.stringify(response));
+          }
+        }
       }
     } catch (error) {
       console.log(error);
