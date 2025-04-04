@@ -7,6 +7,8 @@ export class MIEChat {
   apiConverzationHistory: any[] = [];
   assistantMessageContent: any[] = [];
   responseCallback?: (res: any) => void;
+  LLmLoopStuckCount: number = 0;
+  userMessageContent: any[] = [];
 
   constructor(message: string, responseCallBack: any) {
     this.responseCallback = responseCallBack;
@@ -30,6 +32,8 @@ export class MIEChat {
   }
 
   async recursivelyMakeClaudeRequests(userContent: any) {
+    let recussiveCall = true;
+
     await this.addToApiConversationHistory({
       role: "user",
       content: userContent,
@@ -37,24 +41,48 @@ export class MIEChat {
     try {
       // Hit API and get the response first.
       // TODO: Create a generic function attemptAPIRequest. which hit the rellevent API but API configurations should be stored in the Class.
-      console.log(userContent.text);
-      const respose = await gemini_response(userContent[0].text);
+      //   console.log(userContent.text);
+      //   const respose = await gemini_response(userContent[0].text);
+      const respose = await gemini_response(this.apiConverzationHistory);
       this.assistantMessageContent = parseAssistanceMessage(respose);
       for (let i = 0; i < this.assistantMessageContent.length; i++) {
         const block = this.assistantMessageContent[i];
-        if (block["name"] == "general_qeury") {
-          if (this.responseCallback) {
-            this.responseCallback(JSON.stringify(block["params"]["response"]));
-          }
-          // TODO: Need to handle the recursive call of the function
-        } else if (block["name"] == "mars_rover_image") {
-          // Hit Mars Rover API to get the images.
-          const response = await mars_api(block["params"]);
-
-          if (this.responseCallback) {
-            this.responseCallback(JSON.stringify(response));
+        await this.processAssistantMessage(block);
+        if (block.type === "tool_use") {
+          if (block["name"] == "general_qeury") {
+            // TODO: Need to handle the recursive call of the function
+            recussiveCall = false;
+          } else if (block["name"] == "mars_rover_image") {
+            // Hit Mars Rover API to get the images.
+            recussiveCall = true;
+          } else if (block["name"] == "attempt_completion") {
+            recussiveCall = false;
           }
         }
+      }
+      const didToolUse = this.assistantMessageContent.some(
+        (respose) => respose.type === "tool_use"
+      );
+      if (!didToolUse) {
+        this.LLmLoopStuckCount++;
+        this.userMessageContent.push({
+          type: "text",
+          text: `[IMPORTANT] [ERROR] You did not use a tool in your previous response! You SHOULD use tool in the response.`,
+        });
+        this.recursivelyMakeClaudeRequests(this.userMessageContent);
+        recussiveCall = false;
+      } else {
+        // TODO: ELSE case to handle the error count.
+      }
+
+      if (respose) {
+        await this.addToApiConversationHistory({
+          role: "assistant",
+          content: [{ type: "text", text: respose }],
+        });
+      }
+      if (recussiveCall && this.LLmLoopStuckCount <= 10) {
+        this.recursivelyMakeClaudeRequests(this.userMessageContent);
       }
     } catch (error) {
       console.log(error);
@@ -63,5 +91,39 @@ export class MIEChat {
 
   async addToApiConversationHistory(message: any) {
     this.apiConverzationHistory.push(message);
+  }
+  async processAssistantMessage(block: any) {
+    if (!block) {
+      return;
+    }
+    switch (block.type) {
+      // TODO: Impliment the other cases is necessary
+      case "tool_use": {
+        switch (block.name) {
+          case "general_qeury": {
+            if (this.responseCallback) {
+              this.responseCallback(
+                JSON.stringify(block["params"]["response"])
+              );
+            }
+          }
+          case "mars_rover_image": {
+            const response = await mars_api(block["params"]);
+            // if (this.responseCallback) {
+            //   this.responseCallback(JSON.stringify(response));
+            // }
+            this.userMessageContent.push({
+              type: "text",
+              text: `Response from Mars Rover API: ${response}`,
+            });
+          }
+          case "attempt_completion": {
+            if (this.responseCallback) {
+              this.responseCallback(JSON.stringify(block["params"]["result"]));
+            }
+          }
+        }
+      }
+    }
   }
 }
