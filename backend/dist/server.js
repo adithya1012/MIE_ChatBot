@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const ws_1 = require("ws");
 const init_1 = require("./init");
+const init = new init_1.Initializer();
 const port = 8090;
 const wss = new ws_1.WebSocketServer({ port }, () => {
     console.log(`WebSocket server is listening on ws://localhost:${port}`);
@@ -22,11 +23,11 @@ wss.on("connection", (ws) => {
     ws.send("Welcome to the WebSocket server!");
     // Listen for incoming messages from the client
     ws.on("message", (data) => __awaiter(void 0, void 0, void 0, function* () {
-        const message = data.toString();
+        // const message = data.toString();
         // console.log(`Received message: ${message}`);
         // const respose = await llm_response(message);
         // console.log(respose);
-        (0, init_1.TaskHandler)(message, (response) => {
+        init.TaskHandler(data, (response) => {
             ws.send(response);
         });
         // console.log("THIS S A TEST MESSAGE");

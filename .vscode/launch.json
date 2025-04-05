@@ -12,3 +12,18 @@
     }
   ]
 }
+
+// {
+//   "version": "0.2.0",
+//   "configurations": [
+//     {
+//       "type": "chrome",
+//       "request": "launch",
+//       "name": "Vite + React Debug",
+//       "url": "http://localhost:8501",
+//       "webRoot": "${workspaceFolder}/frontend/src",
+//       "breakOnLoad": true,
+//       "sourceMaps": true
+//     }
+//   ]
+// }

@@ -15,6 +15,16 @@ export class MIEChat {
     this.startTask(message);
   }
 
+  // This function is called when the same chat is continued
+  async hadleFolloup(message: string) {
+    await this.initTaskLoop([
+      {
+        type: "text",
+        text: `<task> ${message} </task>`,
+      },
+    ]);
+  }
+
   private async startTask(task: string) {
     this.message = [];
     this.apiConverzationHistory = [];
@@ -28,10 +38,10 @@ export class MIEChat {
   }
 
   private async initTaskLoop(userContent: any) {
-    const didEndLoop = await this.recursivelyMakeClaudeRequests(userContent);
+    const didEndLoop = await this.recursivelyMakeLLMRequests(userContent);
   }
 
-  async recursivelyMakeClaudeRequests(userContent: any) {
+  async recursivelyMakeLLMRequests(userContent: any) {
     let recussiveCall = true;
 
     await this.addToApiConversationHistory({
@@ -69,7 +79,7 @@ export class MIEChat {
           type: "text",
           text: `[IMPORTANT] [ERROR] You did not use a tool in your previous response! You SHOULD use tool in the response.`,
         });
-        this.recursivelyMakeClaudeRequests(this.userMessageContent);
+        this.recursivelyMakeLLMRequests(this.userMessageContent);
         recussiveCall = false;
       } else {
         // TODO: ELSE case to handle the error count.
@@ -82,7 +92,7 @@ export class MIEChat {
         });
       }
       if (recussiveCall && this.LLmLoopStuckCount <= 10) {
-        this.recursivelyMakeClaudeRequests(this.userMessageContent);
+        this.recursivelyMakeLLMRequests(this.userMessageContent);
       }
     } catch (error) {
       console.log(error);

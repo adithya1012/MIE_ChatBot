@@ -1,6 +1,7 @@
 import { WebSocketServer, WebSocket } from "ws";
 import llm_response from "./llm_api/local";
-import { TaskHandler } from "./init";
+import { Initializer } from "./init";
+const init = new Initializer();
 
 const port: number = 8090;
 const wss = new WebSocketServer({ port }, () => {
@@ -16,12 +17,12 @@ wss.on("connection", (ws: any) => {
 
   // Listen for incoming messages from the client
   ws.on("message", async (data: Buffer) => {
-    const message = data.toString();
+    // const message = data.toString();
     // console.log(`Received message: ${message}`);
     // const respose = await llm_response(message);
 
     // console.log(respose);
-    TaskHandler(message, (response) => {
+    init.TaskHandler(data, (response) => {
       ws.send(response);
     });
     // console.log("THIS S A TEST MESSAGE");

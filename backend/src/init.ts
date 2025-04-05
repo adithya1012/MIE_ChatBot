@@ -1,15 +1,34 @@
 import { MIEChat } from ".";
 
-// TODO: Need to handle the new request by creating the object. If not create the old objects and store it
+export class Initializer {
+  activeTask: MIEChat | null = null;
+  TaskHandler(data: any, responseCallBack?: (res: any) => void) {
+    // Create a Switch case here for new task and existing tasks.
+    let parsed;
+    try {
+      parsed = JSON.parse(data);
+    } catch {
+      console.error("Error While Parsing the message", data);
+      return;
+    }
+    const { message, newTask } = parsed;
+    switch (newTask) {
+      case true: {
+        this.initTask(message, responseCallBack);
+        break;
+      }
+      case false: {
+        if (this.activeTask) {
+          this.activeTask.hadleFolloup(message);
+        } else {
+          console.error("No active task to handle follow-up.");
+        }
+        break;
+      }
+    }
+  }
 
-export function TaskHandler(
-  message: string,
-  responseCallBack?: (res: any) => void
-) {
-  // Create a Switch case here for new task and existing tasks.
-  initTask(message, responseCallBack);
-}
-
-function initTask(message: string, responseCallBack?: (res: any) => void) {
-  let obj: any = new MIEChat(message, responseCallBack);
+  initTask(message: string, responseCallBack?: (res: any) => void) {
+    this.activeTask = new MIEChat(message, responseCallBack);
+  }
 }
