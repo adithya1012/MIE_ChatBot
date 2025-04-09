@@ -1,12 +1,15 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { SYSTEM_PROMPT } from "../prompts/system";
+// import { SYSTEM_PROMPT } from "../prompts/system";
 import * as dotenv from "dotenv";
 import { convertMessageToGemini } from "../transform/gemini_format";
 
 dotenv.config();
 const GEMINI_KEY = process.env.GEMINI_API_KEY || "";
 
-async function gemini_response(messages: any[]): Promise<string> {
+async function gemini_response(
+  messages: any[],
+  SYSTEM_PROMPT: string
+): Promise<string> {
   // const genAI = new GoogleGenerativeAI(GEMINI_KEY);
   // const model = genAI.getGenerativeModel({
   //   model: "gemini-2.0-flash",

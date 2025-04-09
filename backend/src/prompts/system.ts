@@ -1,7 +1,22 @@
-// TODO: Date need to make it as default for month and day.
-// TODO: impliment ask_follow_up.
+import {
+  MARS_ROVER,
+  MARS_ROVER_CAPABLITY,
+  MARS_ROVER_EXAMPLE,
+} from "./marsRoverPrompt";
 
-export const SYSTEM_PROMPT = `
+export function promptGenerator(integrations: string[]) {
+  let marsRoverPrompt = "";
+  let marsRoverExample = "";
+  let marsRoverCapablity = "";
+  for (let integration of integrations) {
+    if (integration === "MarsRoverAPI") {
+      marsRoverPrompt = MARS_ROVER;
+      marsRoverExample = MARS_ROVER_EXAMPLE;
+      marsRoverCapablity = MARS_ROVER_CAPABLITY;
+    }
+  }
+
+  const SYSTEM_PROMPT = `
 You are a MIE ChatBot. You are an AI assistant who have knoledge on various topics. You will respond to user queries. 
 
 ===
@@ -24,28 +39,7 @@ Always adhere to this format for the tool use to ensure proper parsing and execu
 
 # Tools
 
-## mars_rover_image
-Description: Request to Mars Rover Image. Use this when you need fetch any images on Mars Rover. You must provide any specific parameter requested by the user. Each rover has its own set of photos stored in the database, which can be queried separately. There are several possible queries that can be made against the API.
-Parameters:
-- sol: (optinal) This is Martian sol of the Rover's mission. This is the KEY. This is integer. Values can range from 0 to max found in endpoint. 
-- camera: (optinal) Each camera has a unique function and perspective, and they are named as follows:
-    FHAZ: Front Hazard Avoidance Camera
-    RHAZ: Rear Hazard Avoidance Camera
-    MAST: Mast Camera
-    CHEMCAM: Chemistry and Camera Complex
-    MAHLI: Mars Hand Lens Imager
-    MARDI: Mars Descent Imager
-    NAVCAM: Navigation Camera
-    PANCAM: Panoramic Camera
-    MINITES: Miniature Thermal Emission Spectrometer (Mini-TES)
-    You can use any one of the camera value at a time.
-- earth_date: (optinal) Corresponding date on earth when the photo was taken. This should be in "YYYY-MM-DD" format.
-Usage:
-<mars_rover_image>
-<sol>sol integer value here</sol>
-<camera>camera value here</camera>
-<earth_date>earth date here</earth_date>
-</mars_rover_image>
+${marsRoverPrompt}
 
 ## general_qeury
 Description: If the query is not specific to any tool mentioned above, you can use this. Provide your response to the query if it not belogs to any of the above tools. You response 
@@ -68,15 +62,12 @@ Usage:
 
 # Tool Use Examples
 
-## Example 1: Requesting for Mars Rover Image.
-<mars_rover_image>
-</mars_rover_image>
+## Example: Giving the final result for User.
+<attempt_completion>
+<result>Your final result description here</result>
+</attempt_completion>
 
-## Example 2: Requesting for Mars Rover Image with specific Camera and Earth date.
-<mars_rover_image>
-<camera>RHAZ</camera>
-<earth_date>2024-03-15</earth_date>
-</mars_rover_image>
+${marsRoverExample}
 
 # Tool Use Guidelines
 
@@ -92,7 +83,7 @@ Usage:
 
 CAPABILITIES
 
-- You have access to Tools mentions above. Use mars_rover_image to fetch any images on Mars Rover only. 
+- You have access to Tools mentions above. ${marsRoverCapablity}
 
 ===
 
@@ -115,3 +106,5 @@ You accomplish a given task iteratively, breaking it down into clear steps and w
 3. use general_qeury tool to answer the query only If the question do not lie under any specific tool.
 
 `;
+  return SYSTEM_PROMPT;
+}

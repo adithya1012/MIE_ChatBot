@@ -12,9 +12,12 @@ export class Initializer {
       return;
     }
     const { message, newTask } = parsed;
+    // TODO: This integation array should be passed from UI
+    const integrations = ["MarsRoverAPI"];
+    // const integrations = [""];
     switch (newTask) {
       case true: {
-        this.initTask(message, responseCallBack);
+        this.initTask(message, integrations, responseCallBack);
         break;
       }
       case false: {
@@ -28,7 +31,11 @@ export class Initializer {
     }
   }
 
-  initTask(message: string, responseCallBack?: (res: any) => void) {
-    this.activeTask = new MIEChat(message, responseCallBack);
+  initTask(
+    message: string,
+    integrations: string[],
+    responseCallBack?: (res: any) => void
+  ) {
+    this.activeTask = new MIEChat(message, integrations, responseCallBack);
   }
 }

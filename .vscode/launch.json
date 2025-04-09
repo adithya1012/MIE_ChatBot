@@ -5,12 +5,13 @@
       "type": "node",
       "request": "launch",
       "name": "Launch WebSocket Server",
-      "program": "${workspaceFolder}/backend/src/server.js",
+      "program": "${workspaceFolder}/backend/src/server.ts",
       "outFiles": ["${workspaceFolder}/**/*.js"],
       "sourceMaps": true,
       "console": "integratedTerminal"
     }
-  ]
+  ],
+  "sourceMaps": true
 }
 
 // {

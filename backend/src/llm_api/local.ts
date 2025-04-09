@@ -1,4 +1,4 @@
-import { SYSTEM_PROMPT } from "../prompts/system";
+// import { SYSTEM_PROMPT } from "../prompts/system";
 
 async function llm_response(input_test: string): Promise<string> {
   // Talk to Ollama and respond back.
@@ -11,7 +11,7 @@ async function llm_response(input_test: string): Promise<string> {
       body: JSON.stringify({
         model: "deepseek-r1:1.5b",
         prompt: input_test,
-        system: SYSTEM_PROMPT,
+        // system: SYSTEM_PROMPT,
         stream: false,
       }),
     });

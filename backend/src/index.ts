@@ -1,6 +1,7 @@
 import gemini_response from "./llm_api/gemini";
 import { parseAssistanceMessage } from "./parser/parseAssistantMessage";
 import { mars_api } from "./tool_api/marsRoverImgAPI";
+import { promptGenerator } from "./prompts/system";
 
 export class MIEChat {
   message: any[] = [];
@@ -9,9 +10,11 @@ export class MIEChat {
   responseCallback?: (res: any) => void;
   LLmLoopStuckCount: number = 0;
   userMessageContent: any[] = [];
+  integrations: string[] = [];
 
-  constructor(message: string, responseCallBack: any) {
+  constructor(message: string, integrations: string[], responseCallBack: any) {
     this.responseCallback = responseCallBack;
+    this.integrations = integrations.map((name) => name);
     this.startTask(message);
   }
 
@@ -49,21 +52,21 @@ export class MIEChat {
       content: userContent,
     });
     try {
-      // Hit API and get the response first.
-      // TODO: Create a generic function attemptAPIRequest. which hit the rellevent API but API configurations should be stored in the Class.
       //   console.log(userContent.text);
       //   const respose = await gemini_response(userContent[0].text);
-      const respose = await gemini_response(this.apiConverzationHistory);
+      const SYSTEM_PROMPT: string = promptGenerator(this.integrations);
+      const respose = await gemini_response(
+        this.apiConverzationHistory,
+        SYSTEM_PROMPT
+      );
       this.assistantMessageContent = parseAssistanceMessage(respose);
       for (let i = 0; i < this.assistantMessageContent.length; i++) {
         const block = this.assistantMessageContent[i];
         await this.processAssistantMessage(block);
         if (block.type === "tool_use") {
           if (block["name"] == "general_qeury") {
-            // TODO: Need to handle the recursive call of the function
             recussiveCall = false;
           } else if (block["name"] == "mars_rover_image") {
-            // Hit Mars Rover API to get the images.
             recussiveCall = true;
           } else if (block["name"] == "attempt_completion") {
             recussiveCall = false;
