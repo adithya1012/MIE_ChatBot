@@ -9,9 +9,17 @@ import { message } from "../../interfaces/interfaces";
 import { Overview } from "@/components/custom/overview";
 import { Header } from "@/components/custom/header";
 import { v4 as uuidv4 } from "uuid";
+import { IntegrationManager } from "../../integrationManager";
+
+const manager = new IntegrationManager();
+await manager.loadManifests("/integrations/integration.yaml");
+
+const integrations = manager.getIntegrations();
+console.log("Integrations:", integrations);
+
+// console.log("Active integrations:", integrations.integrations);
 
 const socket = new WebSocket("ws://localhost:8090"); //change to your websocket endpoint
-
 export function Chat() {
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>();
@@ -47,6 +55,7 @@ export function Chat() {
     const payload = {
       message: messageText,
       newTask: isNewTask.current,
+      integrations: integrations,
     };
     socket.send(JSON.stringify(payload));
     isNewTask.current = false;

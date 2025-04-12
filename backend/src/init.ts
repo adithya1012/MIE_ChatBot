@@ -11,9 +11,9 @@ export class Initializer {
       console.error("Error While Parsing the message", data);
       return;
     }
-    const { message, newTask } = parsed;
+    const { message, newTask, integrations } = parsed;
     // TODO: This integation array should be passed from UI
-    const integrations = ["MarsRoverAPI"];
+    // const integrations = ["MarsRoverAPI"];
     // const integrations = [""];
     switch (newTask) {
       case true: {

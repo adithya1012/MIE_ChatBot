@@ -2,7 +2,7 @@ chat_manifest:
   version: "1.0.1"
   description: "Integration manifest APIs."
 
-rest_app:
-  - name: "MarsRoverAPI"
-  - name: "TEST_API" #of the APIs for integration with chatbot
+integrations:
+  # - name: "MarsRoverAPI"
+  # - name: "TEST_API" #of the APIs for integration with chatbot
   # - name: "Name2" of the APIs for integration with chatbot
