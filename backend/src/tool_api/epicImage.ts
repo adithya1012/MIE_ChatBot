@@ -1,0 +1,38 @@
+import axios from "axios";
+
+/**
+ * Get natural color EPIC image URLs by date.
+ * @param date - Date in 'YYYY-MM-DD' format
+ * @returns Array of image URLs
+ */
+async function getEpicImageUrlByDate(date: string): Promise<string[]> {
+  try {
+    const apiUrl = `https://epic.gsfc.nasa.gov/api/natural/date/${date}`;
+    const response = await axios.get(apiUrl);
+    const data = response.data;
+
+    if (!data || data.length === 0) {
+      console.log(`No images found for ${date}`);
+      return [];
+    }
+
+    const [year, month, day] = date.split("-");
+
+    const imageUrls = data.map((item: any) => {
+      const imageName = item.image;
+      return `https://epic.gsfc.nasa.gov/archive/natural/${year}/${month}/${day}/png/${imageName}.png`;
+    });
+
+    return imageUrls;
+  } catch (error) {
+    console.error("Error fetching image data:", error);
+    return [];
+  }
+}
+
+// Example usage:
+(async () => {
+  const date = "2015-10-31"; // Replace with your date
+  const images = await getEpicImageUrlByDate(date);
+  console.log(images);
+})();
