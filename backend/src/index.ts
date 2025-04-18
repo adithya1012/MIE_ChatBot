@@ -1,7 +1,8 @@
 import gemini_response from "./llm_api/gemini";
 import { parseAssistanceMessage } from "./parser/parseAssistantMessage";
-import { mars_api } from "./tool_api/marsRoverImgAPI";
+import { mars_image_api } from "./tool_api/marsRoverImgAPI";
 import { promptGenerator } from "./prompts/system";
+import { earth_image_api } from "./tool_api/epicImage";
 
 export class MIEChat {
   message: any[] = [];
@@ -64,12 +65,13 @@ export class MIEChat {
         const block = this.assistantMessageContent[i];
         await this.processAssistantMessage(block);
         if (block.type === "tool_use") {
-          if (block["name"] == "general_qeury") {
+          if (
+            block["name"] == "general_qeury" ||
+            block["name"] == "attempt_completion"
+          ) {
             recussiveCall = false;
           } else if (block["name"] == "mars_rover_image") {
             recussiveCall = true;
-          } else if (block["name"] == "attempt_completion") {
-            recussiveCall = false;
           }
         }
       }
@@ -110,7 +112,6 @@ export class MIEChat {
       return;
     }
     switch (block.type) {
-      // TODO: Impliment the other cases is necessary
       case "tool_use": {
         switch (block.name) {
           case "general_qeury": {
@@ -121,7 +122,7 @@ export class MIEChat {
             }
           }
           case "mars_rover_image": {
-            const response = await mars_api(block["params"]);
+            const response = await mars_image_api(block["params"]);
             // if (this.responseCallback) {
             //   this.responseCallback(JSON.stringify(response));
             // }
@@ -134,6 +135,13 @@ export class MIEChat {
             if (this.responseCallback) {
               this.responseCallback(JSON.stringify(block["params"]["result"]));
             }
+          }
+          case "earth_image": {
+            const response = await earth_image_api(block["params"]);
+            this.userMessageContent.push({
+              type: "text",
+              text: `Response from Earth API: ${response}`,
+            });
           }
         }
       }

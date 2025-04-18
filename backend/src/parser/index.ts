@@ -3,6 +3,7 @@ export const toolUseNames = [
   "mars_rover_image",
   "general_qeury",
   "attempt_completion",
+  "earth_image",
 ] as const;
 
 export type ToolUseName = (typeof toolUseNames)[number];
@@ -19,6 +20,7 @@ export const toolParmName = [
   "earth_date",
   "response",
   "result",
+  "type",
 ] as const;
 
 export type ToolParamName = (typeof toolParmName)[number];

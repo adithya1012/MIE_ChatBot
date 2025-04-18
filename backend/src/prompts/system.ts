@@ -4,15 +4,28 @@ import {
   MARS_ROVER_EXAMPLE,
 } from "./marsRoverPrompt";
 
+import { EARTH, EARTH_CAPABLITY, EARTH_EXAMPLE } from "./epicImagePrompt";
+
 export function promptGenerator(integrations: string[]) {
   let marsRoverPrompt = "";
   let marsRoverExample = "";
   let marsRoverCapablity = "";
+
+  let earthPrompt = "";
+  let earthExample = "";
+  let earthCapablity = "";
+
   for (let integration of integrations) {
     if (integration === "MarsRoverAPI") {
       marsRoverPrompt = MARS_ROVER;
       marsRoverExample = MARS_ROVER_EXAMPLE;
       marsRoverCapablity = MARS_ROVER_CAPABLITY;
+    }
+
+    if (integration === "EPICImageAPI") {
+      earthPrompt = EARTH;
+      earthExample = EARTH_EXAMPLE;
+      earthCapablity = EARTH_CAPABLITY;
     }
   }
 
@@ -40,6 +53,7 @@ Always adhere to this format for the tool use to ensure proper parsing and execu
 # Tools
 
 ${marsRoverPrompt}
+${earthPrompt}
 
 ## general_qeury
 Description: If the query is not specific to any tool mentioned above, you can use this. Provide your response to the query if it not belogs to any of the above tools. You response 
@@ -68,6 +82,7 @@ Usage:
 </attempt_completion>
 
 ${marsRoverExample}
+${earthExample}
 
 # Tool Use Guidelines
 
@@ -83,7 +98,7 @@ ${marsRoverExample}
 
 CAPABILITIES
 
-- You have access to Tools mentions above. ${marsRoverCapablity}
+- You have access to Tools mentions above. ${marsRoverCapablity} ${earthCapablity}
 
 ===
 
