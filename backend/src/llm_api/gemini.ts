@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 // import { SYSTEM_PROMPT } from "../prompts/system";
-import * as dotenv from "dotenv";
+// import * as dotenv from "dotenv";
+const dotenv = require("dotenv");
 import { convertMessageToGemini } from "../transform/gemini_format";
 
 dotenv.config();

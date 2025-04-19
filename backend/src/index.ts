@@ -120,6 +120,7 @@ export class MIEChat {
                 JSON.stringify(block["params"]["response"])
               );
             }
+            break;
           }
           case "mars_rover_image": {
             const response = await mars_image_api(block["params"]);
@@ -130,11 +131,13 @@ export class MIEChat {
               type: "text",
               text: `Response from Mars Rover API: ${response}`,
             });
+            break;
           }
           case "attempt_completion": {
             if (this.responseCallback) {
               this.responseCallback(JSON.stringify(block["params"]["result"]));
             }
+            break;
           }
           case "earth_image": {
             const response = await earth_image_api(block["params"]);
@@ -142,6 +145,7 @@ export class MIEChat {
               type: "text",
               text: `Response from Earth API: ${response}`,
             });
+            break;
           }
         }
       }

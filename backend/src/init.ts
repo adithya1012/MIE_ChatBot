@@ -1,4 +1,4 @@
-import { MIEChat } from ".";
+import { MIEChat } from "./index";
 
 export class Initializer {
   activeTask: MIEChat | null = null;
