@@ -1,0 +1,15 @@
+{
+  "servers": {
+    "test": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "run",
+        "--with",
+        "mcp",
+        "python",
+        "/Users/adithyasn7gmail.com/Desktop/PFW/projects/MIE_project/RAG_Medical_ChatBot/mcpdemo/server/weather.py"
+      ]
+    }
+  }
+}
