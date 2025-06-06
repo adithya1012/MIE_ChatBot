@@ -1,6 +1,5 @@
 import { ThemeToggle } from "./theme-toggle";
 
-
 export const Header = () => {
   return (
     <>

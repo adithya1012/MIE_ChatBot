@@ -15,9 +15,9 @@ interface ChatInputProps {
 
 const suggestedActions = [
   {
-    title: "How is the weather",
-    label: "in FortWayne?",
-    action: "How is the weather in FortWayne today?",
+    title: "Explain me what can you do ?",
+    label: "With all the parameters",
+    action: "Explain me what can you do? With all the parameters",
   },
   {
     title: "Give me a Mars photo",

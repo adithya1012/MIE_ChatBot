@@ -3,6 +3,6 @@ chat_manifest:
   description: "Integration manifest APIs."
 
 integrations:
-  - name: "MarsRoverAPI"
-  - name: "EPICImageAPI" #Earth Polychromatic Imaging Camera (EPIC)
+  # - name: "MarsRoverAPI"
+  # - name: "EPICImageAPI" #Earth Polychromatic Imaging Camera (EPIC)
   # - name: "Name2" #of the APIs for integration with chatbot
