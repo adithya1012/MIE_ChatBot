@@ -34,7 +34,7 @@ def format_alert(feature: dict) -> str:
 
 @mcp.tool()
 async def get_alerts(state: str) -> str:
-    """Get weather alerts for a US state.
+    """Get weather alerts for a US state. United States alerts will be given through this function. 
     Args:
     state: Two-letter US state code (e.g. CA, NY)
     """
@@ -50,12 +50,14 @@ async def get_alerts(state: str) -> str:
 
 @mcp.tool()
 async def get_add(a, b) -> str:
-    """Gives the addition is 2 numbers
+    """Gives the addition is 2 numbers. Call this function when you need to add 2 integer numbers.
     Args:
     a: Integer
     b: Integer
     """
     return int(a)+int(b)
+
+
 
 if __name__ == "__main__":
     mcp.run()

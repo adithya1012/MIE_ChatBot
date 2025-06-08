@@ -217,7 +217,7 @@ async function main() {
     console.log("Examples:");
     console.log("  node build/index.js ../mcp-python/server/test_server.py");
     console.log(
-      "  node build/index.js ../mcp-python/server/test_server.py ../mcp-python/venv"
+      "  node build/index.js ../mcp-python/server/test_server.py ../mcp-python/.venv"
     );
     return;
   }
