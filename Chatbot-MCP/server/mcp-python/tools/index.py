@@ -34,7 +34,7 @@ def format_alert(feature: dict) -> str:
 
 @mcp.tool()
 async def get_Mars_image(state: str) -> str:
-    """Get weather alerts for a US state.
+    """Get Mars 
     Args:
     state: Two-letter US state code (e.g. CA, NY)
     """
