@@ -33,8 +33,8 @@ def format_alert(feature: dict) -> str:
     """
 
 @mcp.tool()
-async def get_alerts(state: str) -> str:
-    """Get weather alerts for a US state.
+async def get_Mars_image(state: str) -> str:
+    """Get Mars 
     Args:
     state: Two-letter US state code (e.g. CA, NY)
     """
@@ -56,6 +56,8 @@ async def get_add(a, b) -> str:
     b: Integer
     """
     return int(a)+int(b)
+
+
 
 if __name__ == "__main__":
     mcp.run()
