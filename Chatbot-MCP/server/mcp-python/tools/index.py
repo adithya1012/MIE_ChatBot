@@ -3,13 +3,14 @@ import os
 from typing import Any
 import httpx
 from mcp.server.fastmcp import FastMCP
-
+from mars_img import get_mars_image_definition
 mcp = FastMCP("weather")
 
 NWS_API_BASE = "https://api.weather.gov"
 USER_AGENT = "weather-app/1.0"
 
 MARS_BASE_API = "https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?"
+NASA_API_KEY = os.getenv("NASA_API_KEY", "DEMO_KEY")
 
 async def make_nws_request(url):
     """Make request to NWS API with proper error handling"""
@@ -62,7 +63,7 @@ async def get_add(a, b) -> str:
     return int(a)+int(b)
 
 @mcp.tool()
-async def get_mars_image(earth_date: Any = None, sol: Any = None, camera: Any = None) -> str:
+async def get_mars_image_tool(earth_date: Any = None, sol: Any = None, camera: Any = None) -> str:
     """Request to Mars Rover Image. Fetch any images on Mars Rover. Each rover has its own set of photos stored in the database, which can be queried separately. There are several possible queries that can be made against the API.\n
     Parameters:\n
         - earth_date: (optinal) Corresponding date on earth when the photo was taken. This should be in "YYYY-MM-DD" format. Default pass today's date\n
@@ -79,78 +80,108 @@ async def get_mars_image(earth_date: Any = None, sol: Any = None, camera: Any = 
             MINITES: Miniature Thermal Emission Spectrometer (Mini-TES)\n
             You can use any one of the camera value at a time.\n
     """
+    return await get_mars_image_definition(earth_date, sol, camera)
 
-    print(earth_date, sol, camera)
-    NASA_API_KEY = os.getenv("NASA_API_KEY", "DEMO_KEY")
-    base_api = "https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?"
+@mcp.tool()
+async def get_earth_image_tool(earth_date: Any = None, type: Any = None) -> str:
+    """Request to Earth Polychromatic Imaging Camera (EPIC) API. Fetch satellite images of Earth from NASA's DSCOVR satellite.\n
+    Parameters:\n
+        - earth_date: (optional) Date when the photo was taken. This should be in "YYYY-MM-DD" format. If not provided, will get latest available images.\n
+        - type: (optional) Type of image to retrieve. Options are:\n
+            "natural" - Natural color images (default)\n
+            "enhanced" - Enhanced color images\n
+    """
     
-    # Build parameters dictionary
-    params = {}
+    base_api = "https://epic.gsfc.nasa.gov/api/"
     
-    # Handle mutually exclusive date/sol parameters
-    if sol is not None:
-        if sol < 0:
-            return "Error: sol must be a non-negative integer"
-        params["sol"] = str(sol)
-    elif earth_date:
-        # Validate date format
+    # Build URL
+    param_url = base_api
+    
+    # Handle image type
+    if type:
+        if type.lower() in ["natural", "enhanced", "aerosol", "cloud"]:
+            param_url += f"{type.lower()}/"
+        else:
+            return f"Error: Invalid type '{type}'. Valid options: 'natural', 'enhanced','aerosol', 'cloud'"
+    else:
+        param_url += "natural/"
+        
+    
+    # Handle date parameter
+    if earth_date:
         try:
             datetime.datetime.strptime(earth_date, "%Y-%m-%d")
-            params["earth_date"] = earth_date
+            year, month, day = earth_date.split("-")
+            param_url += f"date/{year}-{month}-{day}"
         except ValueError:
             return "Error: earth_date must be in YYYY-MM-DD format"
-    else:
-        # Default: use sol=1000 if neither is provided
-        params["sol"] = "1000"
-    
-    # Handle camera parameter
-    if camera:
-        valid_cameras = [
-            "FHAZ", "RHAZ", "MAST", "CHEMCAM", "MAHLI", 
-            "MARDI", "NAVCAM", "PANCAM", "MINITES"
-        ]
-        camera_upper = camera.upper()
-        if camera_upper in valid_cameras:
-            params["camera"] = camera_upper
-        else:
-            return f"Error: Invalid camera '{camera}'. Valid options: {', '.join(valid_cameras)}"
-    
-    # Build URL parameters string
-    param_url = ""
-    for param_key, param_value in params.items():
-        param_url += f"{param_key}={param_value}&"
-    
-    # Add page and API key
-    param_url += f"page=1&api_key={NASA_API_KEY}"
-    
-    # Complete URL
-    api_url = base_api + param_url
     
     try:
+        print(f"Calling EARTH API FUNCTION with URL: {param_url}")
+        
         # Make API request
-        async with httpx.AsyncClient() as client:
-            response = await client.get(api_url, timeout=30.0)
+        async with httpx.AsyncClient(
+            follow_redirects=True,
+            timeout=30.0,
+            headers={
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Accept': 'application/json, text/plain, */*',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Connection': 'keep-alive'
+            }
+        ) as client:
+            response = await client.get(param_url, timeout=30.0)
+            # return param_url
             response.raise_for_status()
             
             data = response.json()
             
-            # Check if photos were found
-            if not data.get("photos") or len(data["photos"]) == 0:
-                return "No images are found for the specified parameters"
+            # Check if images were found
+            if not data or len(data) == 0:
+                return "No images found for the specified parameters"
             
-            # Return first image URL
-            first_image_url = data["photos"][0]["img_src"]
+            # Extract image information from first result
+            first_image = data[0]
+            image_date = first_image["date"]
+            image_name = first_image["image"]
+            caption = first_image.get("caption", "No caption available")
             
-            # Optional: return additional info
-            photo_info = data["photos"][0]
-            result = f"Mars Rover Image Found!\n"
-            result += f"Image URL: {first_image_url}\n"
-            result += f"Camera: {photo_info['camera']['full_name']} ({photo_info['camera']['name']})\n"
-            result += f"Earth Date: {photo_info['earth_date']}\n"
-            result += f"Sol: {photo_info['sol']}\n"
-            result += f"Total photos available: {len(data['photos'])}"
+            # Parse date to build archive URL
+            # Date format is typically "2015-10-31 00:36:33" or "2015-10-31"
+            date_parts = image_date.split("-")
+            year = date_parts[0]
+            month = date_parts[1]
             
-            return result
+            # Handle day extraction (might have time component)
+            day_part = date_parts[2]
+            if " " in day_part:
+                day = day_part.split(" ")[0]
+            else:
+                day = day_part
+            
+            # Use the type from URL (natural or enhanced)
+            image_type = "natural"
+            if "enhanced" in param_url:
+                image_type = "enhanced"
+            elif "aerosol" in param_url:
+                image_type = "aerosol"
+            elif "cloud" in param_url:
+                image_type = "cloud"
+            
+            
+            # Build final image URL
+            final_image_url = f"https://epic.gsfc.nasa.gov/archive/{image_type}/{year}/{month}/{day}/png/{image_name}.png"
+            
+            # Build result string
+            result = f"Earth Image Found!\n"
+            result += f"Image URL: {final_image_url}\n"
+            result += f"Caption: {caption}\n"
+            result += f"Date: {image_date}\n"
+            result += f"Image Type: {image_type.title()}\n"
+            result += f"Total images available: {len(data)}"
+            
+            return result+" "+ param_url
+            # return param_url
             
     except httpx.TimeoutException:
         return "Error: Request timed out. Please try again."
@@ -158,6 +189,9 @@ async def get_mars_image(earth_date: Any = None, sol: Any = None, camera: Any = 
         return f"Error: HTTP {e.response.status_code}"
     except Exception as e:
         return f"Error: {str(e)}"
-
+    
 if __name__ == "__main__":
     mcp.run()
+
+
+# get_earth_image_tool(type="natural")
