@@ -84,6 +84,8 @@ async def get_mars_image_tool(earth_date: Any = None, sol: Any = None, camera: A
 
 @mcp.tool()
 async def get_earth_image_tool(earth_date: Any = None, type: Any = None) -> str:
+    # TODO: Update the earth image tool description from github
+    # TODO: Move this function definition to different file for organized code. 
     """Request to Earth Polychromatic Imaging Camera (EPIC) API. Fetch satellite images of Earth from NASA's DSCOVR satellite.\n
     Parameters:\n
         - earth_date: (optional) Date when the photo was taken. This should be in "YYYY-MM-DD" format. If not provided, will get latest available images.\n
