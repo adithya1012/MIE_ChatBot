@@ -283,7 +283,8 @@ class MCPClient {
 
       // Get final response after tool execution
       const followUpResponse = await this.openai.chat.completions.create({
-        model: "gpt-4-turbo-preview",
+        // model: "gpt-4-turbo-preview",
+        model: "gpt-4.1-nano",
         max_tokens: 1000,
         messages,
         tools: this.openaiTools,
