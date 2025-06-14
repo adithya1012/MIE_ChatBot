@@ -42,9 +42,9 @@ class TaskHandler {
             // Send query to MCP client for processing
             const response = await mcpManager.processQuery(parsedMessage.query || parsedMessage);
             callback(JSON.stringify({
-                success: true,
+                // success: true,
                 data: response,
-                timestamp: new Date().toISOString(),
+                // timestamp: new Date().toISOString(),
             }));
         }
         catch (error) {

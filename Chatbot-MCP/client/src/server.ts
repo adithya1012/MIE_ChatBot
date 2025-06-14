@@ -56,10 +56,13 @@ class TaskHandler {
         parsedMessage.query || parsedMessage
       );
       callback(
+        // JSON.stringify({
+        //   success: true,
+        //   data: response,
+        //   timestamp: new Date().toISOString(),
+        // })
         JSON.stringify({
-          success: true,
           data: response,
-          timestamp: new Date().toISOString(),
         })
       );
     } catch (error) {

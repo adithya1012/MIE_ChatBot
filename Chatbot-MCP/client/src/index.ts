@@ -235,7 +235,7 @@ export class MCPClient {
 
     try {
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-4.1-nano",
         max_tokens: 4000,
         messages,
         tools: this.openaiTools,
@@ -291,7 +291,7 @@ export class MCPClient {
 
         // Get final response after tool execution
         const followUpResponse = await this.openai.chat.completions.create({
-          model: "gpt-4o",
+          model: "gpt-4.1-nano",
           max_tokens: 4000,
           messages,
           tools: this.openaiTools,
