@@ -181,6 +181,12 @@ class MCPClient {
                 content: query,
             },
         ];
+<<<<<<< HEAD
+        try {
+            const response = await this.openai.chat.completions.create({
+                model: "gpt-4.1-nano",
+                max_tokens: 4000,
+=======
         const response = await this.openai.chat.completions.create({
             model: "gpt-4-turbo-preview",
             max_tokens: 1000,
@@ -233,6 +239,7 @@ class MCPClient {
             const followUpResponse = await this.openai.chat.completions.create({
                 model: "gpt-4-turbo-preview",
                 max_tokens: 1000,
+>>>>>>> main
                 messages,
                 tools: this.openaiTools,
                 tool_choice: "auto",
@@ -241,6 +248,61 @@ class MCPClient {
             if (followUpMessage?.content) {
                 finalText.push(followUpMessage.content);
             }
+<<<<<<< HEAD
+            // Add assistant's text response
+            if (message.content) {
+                finalText.push(message.content);
+            }
+            // Handle tool calls
+            if (message.tool_calls && message.tool_calls.length > 0) {
+                // Add assistant message to conversation
+                messages.push(message);
+                for (const toolCall of message.tool_calls) {
+                    const toolName = toolCall.function.name;
+                    const toolArgs = JSON.parse(toolCall.function.arguments);
+                    console.log(`Calling tool: ${toolName} with args:`, toolArgs);
+                    try {
+                        const result = await this.mcp.callTool({
+                            name: toolName,
+                            arguments: toolArgs,
+                        });
+                        console.log(`Tool ${toolName} result:`, result);
+                        // Add tool result to messages
+                        messages.push({
+                            role: "tool",
+                            tool_call_id: toolCall.id,
+                            content: JSON.stringify(result.content),
+                        });
+                    }
+                    catch (error) {
+                        console.error(`Error calling tool ${toolName}:`, error);
+                        messages.push({
+                            role: "tool",
+                            tool_call_id: toolCall.id,
+                            content: `Error: ${error}`,
+                        });
+                    }
+                }
+                // Get final response after tool execution
+                const followUpResponse = await this.openai.chat.completions.create({
+                    model: "gpt-4.1-nano",
+                    max_tokens: 4000,
+                    messages,
+                    tools: this.openaiTools,
+                    tool_choice: "auto",
+                });
+                const followUpMessage = followUpResponse.choices[0]?.message;
+                if (followUpMessage?.content) {
+                    finalText.push(followUpMessage.content);
+                }
+            }
+            return finalText.join("\n");
+        }
+        catch (error) {
+            console.error("Error in OpenAI processing:", error);
+            throw error;
+=======
+>>>>>>> main
         }
         return finalText.join("\n");
     }
