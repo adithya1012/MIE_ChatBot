@@ -122,11 +122,4 @@ Below is the architecture diagram of the chatbot:
 
 - **Backend**: The backend is not included in this repository. It is available in the [MCP repository](https://github.com/adithya1012/MCP). The backend implements a WebSocket server using the Model Context Protocol (MCP) architecture. You must run the backend separately to enable full chat functionality.
 
-- **Integration**: The frontend is designed to be easily integrated with any backend that supports WebSocket and the MCP protocol. You can modify the integration configuration in `frontend/public/integrations/integration.yaml` as needed.
-
-- **Testing**: For local development or testing, you can use the simple backend provided in `frontend/testbackend/test.py`.
-
-## Notes
-
-- Make sure the backend is running and accessible before starting the frontend for full functionality.
-- You can customize the UI and integration logic by editing the components in `frontend/src/components/` and related files.
+<!-- - **Integration**: The frontend is designed to be easily integrated with any backend that supports WebSocket and the MCP protocol. You can modify the integration configuration in `frontend/public/integrations/integration.yaml` as needed. -->
