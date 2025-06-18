@@ -113,9 +113,38 @@ The frontend will be available at [http://localhost:8501](http://localhost:8501)
 ## Architecture
 
 Below is the architecture diagram of the chatbot:
+```mermaid
+flowchart TD
 
-![Mermaid Diagram](Screenshot/Mermaid_Chart.png)
+subgraph Frontend
+        A[Chatbot UI]
+    end
 
+    subgraph Backend
+        direction TB
+        B[MCP Client]
+        subgraph MCP_Server["MCP Server"]
+            C[Mars Rover Image Tool]
+            D[Earth Image Tool]
+            E[Weather Tool]
+        end
+        F[LLM]
+    end
+
+    A -- WebSocket --> B
+    B -- "Get available tools" --> MCP_Server
+    MCP_Server -- "Tools info" --> B
+    B -- "Prompt + Tools info" --> F
+    F -- "Tool choice + params" --> B
+    B -- "Execute tool" --> MCP_Server
+    MCP_Server -- "Tool result" --> B
+    B -- "Result" --> F
+    F -- "Next tool or final result" --> B
+    B -- "Final result" --> A
+
+    style Backend stroke-dasharray: 5 5
+    style MCP_Server stroke-width:2px,stroke:#888
+```
 ## Explanation
 
 - **Frontend**: This repository contains the code for the chatbot frontend, built with TypeScript and React. Running `npm run dev` in the `frontend` directory will start the development server on port 8501. The frontend acts as a WebSocket client, maintaining a persistent connection with the backend for real-time chat functionality.
